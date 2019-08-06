@@ -12,6 +12,8 @@ import numpy as np
 from PIL import Image
 from yolo import YOLO
 
+import argparse
+
 from deep_sort import preprocessing
 from deep_sort import nn_matching
 from deep_sort.detection import Detection
@@ -20,7 +22,7 @@ from tools import generate_detections as gdet
 from deep_sort.detection import Detection as ddet
 warnings.filterwarnings('ignore')
 
-def main(yolo):
+def main(args, yolo):
 
    # Definition of the parameters
     max_cosine_distance = 0.3
@@ -36,7 +38,10 @@ def main(yolo):
 
     writeVideo_flag = True 
     
-    video_capture = cv2.VideoCapture(0)
+    if args.video_input is not '':
+        video_capture = cv2.VideoCapture(args.video_input)
+    else:
+        video_capture = cv2.VideoCapture(0)
 
     if writeVideo_flag:
     # Define the codec and create VideoWriter object
@@ -110,4 +115,10 @@ def main(yolo):
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    main(YOLO())
+    parser = argparse.ArgumentParser(description="Deep Sort running on YOLO")
+    parser.add_argument('-i', '--video_input', type=str,
+                        help="full path to video file to track, leave empty for webcamera")
+    
+    args = parser.parse_args()
+
+    main(args, YOLO())
